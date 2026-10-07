@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sami — Developer · Trading Systems · Learning Tools</title>
+<meta name="description" content="Portfolio of Sami: algorithmic trading systems, interactive CS learning tools and experimental web builds.">
+<style>
+:root{color-scheme:dark;--bg:#020405;--g:#00ff9c;--c:#00c8ff;--a:#ffd27a;--m:#ff3fa4;--dim:#5d8a77;--tx:#cfeee0;--pn:rgba(2,14,10,.66);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:calc(60px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-x:hidden}
+a{color:var(--c);text-decoration:none}a:hover{color:var(--a)}
+canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+#scan{position:fixed;inset:0;pointer-events:none;z-index:5;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.2) 2px 3px),radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.7) 100%)}
+#pg{position:fixed;top:0;left:0;height:2px;width:0;background:var(--g);box-shadow:0 0 10px var(--g);z-index:8}
+nav{position:fixed;top:0;left:0;right:0;z-index:7;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 5vw 12px;background:linear-gradient(rgba(2,4,5,.85),rgba(2,4,5,0));font-size:13px}
+nav .lg{color:var(--g);text-shadow:0 0 8px rgba(0,255,156,.6)}nav div a{margin-left:14px;color:var(--tx)}nav div a:hover{color:var(--g)}
+#hud{position:fixed;left:5vw;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:7;font-size:11px;color:var(--dim);letter-spacing:.08em;pointer-events:none}#hud b{color:var(--a);font-weight:400}
+section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:96px 5vw}
+section.proj{min-height:85vh}
+.panel{max-width:560px;background:var(--pn);border:1px solid rgba(0,255,156,.32);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 0 34px rgba(0,255,156,.07);transition:border-color .3s,box-shadow .3s}
+.panel:hover{border-color:var(--g);box-shadow:0 0 44px rgba(0,255,156,.2)}
+.bar{display:flex;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(0,255,156,.22);font-size:11px;color:var(--dim)}
+.bar i{width:8px;height:8px;border-radius:50%;background:var(--dim);opacity:.6}.bar i:first-child{background:var(--m)}.bar i:nth-child(2){background:var(--a)}.bar i:nth-child(3){background:var(--g)}.bar span{margin-left:8px}
+.bd{padding:18px 20px 20px}.bd p{margin:.6em 0 1em}
+h1{font-size:clamp(64px,17vw,190px);line-height:.9;margin:6px 0 18px;letter-spacing:-.05em;color:var(--g);text-shadow:0 0 30px rgba(0,255,156,.55);font-weight:700}
+.glitch{position:relative;display:inline-block}
+.glitch::before,.glitch::after{content:attr(data-t);position:absolute;inset:0;overflow:hidden;text-shadow:none}
+.glitch::before{color:var(--m);left:3px;clip-path:inset(0 0 58% 0);animation:gl 3.1s infinite steps(1)}
+.glitch::after{color:var(--c);left:-3px;clip-path:inset(58% 0 0 0);animation:gl 2.4s infinite steps(1) reverse}
+@keyframes gl{0%,90%{transform:translate(0)}92%{transform:translate(-4px,1px)}94%{transform:translate(4px,-1px)}96%{transform:translate(-2px,0)}}
+h2{font-size:12px;letter-spacing:.24em;color:var(--g);font-weight:400;margin:0 0 14px}
+h3{margin:0;color:var(--a);font-size:20px;font-weight:400}
+.sub{font-size:clamp(16px,2.6vw,22px);color:var(--tx)}.sub b{color:var(--a);font-weight:400}
+.cur{display:inline-block;width:9px;height:1.1em;background:var(--g);vertical-align:-3px;animation:b 1s steps(2) infinite}@keyframes b{50%{opacity:0}}
+.btn{display:inline-block;margin:22px 12px 0 0;padding:10px 16px;border:1px solid var(--g);color:var(--g);letter-spacing:.06em;background:rgba(0,20,14,.5)}
+.btn:hover{background:var(--g);color:#001a10}
+.hint{position:absolute;bottom:56px;left:5vw;font-size:11px;color:var(--dim);letter-spacing:.2em;animation:b 2s steps(2) infinite}
+.tag{display:inline-block;border:1px solid rgba(0,200,255,.4);color:var(--c);padding:1px 8px;margin:3px 6px 3px 0;font-size:12px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.stat b{display:block;font-size:34px;font-weight:400;color:var(--a);text-shadow:0 0 14px rgba(255,210,122,.4)}.stat span{font-size:11px;color:var(--dim);line-height:1.3;display:block}
+.lk{margin-top:12px}.lk a{margin-right:16px;font-size:13px}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}.reveal.in{opacity:1;transform:none}
+#links a{margin-right:16px;font-size:18px}
+footer{position:relative;z-index:1;padding:30px 5vw 70px;color:var(--dim);font-size:11px}
+#picker{position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:7}
+#picker button{width:28px;height:28px;padding:0;font:inherit;font-size:12px;background:rgba(0,20,14,.55);color:var(--g);border:1px solid rgba(0,255,156,.45);cursor:pointer;backdrop-filter:blur(4px)}
+#picker button.on,#picker button:hover{background:var(--g);color:#001a10}
+.term{max-width:640px}
+#tout{max-height:40vh;overflow:auto;font-size:13px;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+#tout .c{color:var(--a)}#tout .u{color:var(--g)}
+.tin{display:flex;gap:8px;margin-top:10px;color:var(--g)}
+.tin input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--tx);font:inherit;caret-color:var(--g)}
+.chip{font:inherit;font-size:12px;background:none;border:1px solid rgba(0,200,255,.4);color:var(--c);padding:2px 9px;margin:10px 6px 0 0;cursor:pointer}.chip:hover{background:var(--c);color:#001a10}
+html.nogl canvas,html.nogl #picker,html.nogl #hud{display:none}
+html.nogl body{background:radial-gradient(ellipse at 72% 28%,#0b2c24 0%,#04100d 38%,#020405 70%) fixed}
+@media (max-width:700px){#picker{right:50%;transform:translateX(50%);top:auto;bottom:calc(36px + env(safe-area-inset-bottom,0px));flex-direction:row}#picker button{width:26px;height:26px}.tin input{font-size:16px}#tout{font-size:12px}footer{padding-bottom:110px}}
+html{-webkit-text-size-adjust:100%}
+@supports (height:100svh){section{min-height:100svh}}
+@media (max-width:900px){section{padding:88px 5vw}.panel{max-width:620px}}
+@media (max-width:700px){
+ body{font-size:14px}
+ nav{font-size:11px;padding-bottom:10px}nav .x{display:none}nav div a{margin-left:11px}
+ section{padding:80px 5vw 70px}section.proj{min-height:auto;padding:56px 5vw}
+ .panel{max-width:100%}.bd{padding:14px 15px 16px}h3{font-size:17px}
+ h1{font-size:clamp(60px,22vw,120px)}
+ .btn{margin:16px 10px 0 0;padding:9px 13px}
+ .hint{font-size:9px;letter-spacing:.12em;max-width:72vw;line-height:1.5;bottom:62px}
+ .stat b{font-size:28px}
+ #hud{left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;padding:3px 8px;background:rgba(2,4,5,.6)}
+ .tag{font-size:11px;padding:0 6px}
+ #links a{display:inline-block;margin:0 14px 8px 0;font-size:16px}
+}
+@media (max-height:520px) and (orientation:landscape){section,section.proj{min-height:auto;padding:70px 5vw 40px}h1{font-size:clamp(48px,13vh,110px)}.hint{display:none}}
+@media (min-width:1500px){body{font-size:16px}.panel{max-width:640px}.sub{font-size:22px}}
+@media (hover:none){.panel:hover{border-color:rgba(0,255,156,.32);box-shadow:0 0 34px rgba(0,255,156,.07)}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style></head><body>
+<canvas id="cv"></canvas><div id="scan"></div><div id="pg"></div>
+<nav><span class="lg">sami<span class="x">@portfolio</span>:~$</span><div><a href="#about">about</a><a href="#projects">projects</a><a href="#stack">stack</a><a href="#contact">contact</a></div></nav>
+<div id="hud">scene &gt; <b id="mn">SINGULARITY</b></div>
+<div id="picker" role="group" aria-label="scene picker"></div>
+<main>
+<section id="hero" data-mode="0">
+ <div class="dim" style="color:var(--dim)">&gt; booting portfolio.sys … ok</div>
+ <h1 class="glitch" data-t="SAMI">SAMI</h1>
+ <div class="sub">developer · cs student · I build <b id="typed"></b><span class="cur"></span></div>
+ <div><a class="btn" href="#projects">[ view projects ]</a><a class="btn" href="#contact">[ open channel ]</a></div>
+ <div class="hint">SCROLL ↓ · THE UNIVERSE MORPHS WITH YOU · CLICK = SHOCKWAVE</div>
+</section>
+<section id="about" data-mode="3">
+ <div class="panel reveal"><div class="bar"><i></i><i></i><i></i><span>whoami.txt</span></div><div class="bd">
+  <h3>Mohammad Sami</h3>
+  <p>Developer and computer-engineering student. I build algorithmic trading systems, web apps and interactive learning tools — and I ship them complete, usually before the coursework deadline notices.</p>
+  <p>Microprocessors and numerical methods by day; crypto automation, 3D and LLM plumbing by night. TypeScript and Python daily, C++ when I want to be close to the metal. Hackathon team lead when the idea is loud enough.</p><p class="dim" style="color:var(--dim)">// "In the depth of codes, a little brain working harder than before."</p>
+  <div class="stats">
+   <div class="stat"><b data-n="48">0</b><span>repositories built since mid-2025</span></div>
+   <div class="stat"><b data-n="100">0</b><span>coins scanned by Trend Radar</span></div>
+   <div class="stat"><b data-n="16">0</b><span>built-in strategies in the TradingView-parity backtester</span></div>
+   <div class="stat"><b data-n="115">0</b><span>hand-computed parity checks</span></div>
+  </div></div></div>
+</section>
+<div id="projs"></div>
+<section id="stack" data-mode="4">
+ <div class="panel reveal"><div class="bar"><i></i><i></i><i></i><span>stack.json</span></div><div class="bd">
+  <h2>~/stack $ cat stack.json</h2>
+  <div id="tags"></div>
+  <p class="dim" style="color:var(--dim)">lab: Monte Carlo risk engine with risk-of-ruin curves (single-file HTML) · smart-office energy-monitor schematic generator · configurable provider-adapter chatbot · bisection, Newton–Raphson &amp; LU decomposition from scratch</p>
+ </div></div>
+</section>
+<section id="terminal" data-mode="0">
+ <div class="panel term reveal"><div class="bar"><i></i><i></i><i></i><span>sami@portfolio: ~</span></div><div class="bd">
+  <div id="tout" aria-live="polite"></div>
+  <label class="tin"><span>$</span><input id="tcmd" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal command"></label>
+  <div id="chips"></div>
+ </div></div>
+</section>
+<section id="contact" data-mode="2">
+ <div class="panel reveal"><div class="bar"><i></i><i></i><i></i><span>channel.open</span></div><div class="bd">
+  <h2>&gt; open a channel</h2>
+  <h3>Let's build something that shouldn't work yet.</h3>
+  <p>Available for collaborations, hackathons and freelance builds — trading tooling, interactive learning apps, 3D web experiences.</p>
+  <div id="links"></div>
+ </div></div>
+</section>
+</main>
+<footer>© <span id="yr"></span> Sami · rendered live: 140,000 particles, one shader, zero images.</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const N=140000, rnd=Math.random, TAU=Math.PI*2, g=()=>(rnd()+rnd()+rnd()-1.5)*1.15;
+const P=[0,1,2,3,4,5,6,7].map(()=>new Float32Array(N*3)), AR=new Float32Array(N);
+const put=(k,i,x,y,z)=>{const a=P[k];a[i*3]=x;a[i*3+1]=y;a[i*3+2]=z;};
+let lx=1,ly=1,lz=1;const lor=dt=>{const dx=10*(ly-lx),dy=lx*(28-lz)-ly,dz=lx*ly-8/3*lz;lx+=dx*dt;ly+=dy*dt;lz+=dz*dt;};
+for(let i=0;i<500;i++)lor(.008);
+const NB=[[0,0,0,3.2,2,3.2],[-3.5,1.5,-2,2.2,2.8,2],[3.5,-1,2,2.5,2,2.8],[1,3,-3,2,1.6,2],[-2,-2.5,3,2.4,1.8,2.2],[0,.5,4,1.6,1.4,1.6],[4,2,-3,1.5,2.2,1.8]],c7=Math.cos(.7),s7=Math.sin(.7);
+for(let i=0;i<N;i++){
+  AR[i]=rnd();
+  // 0: black hole + accretion disk + jets
+  let u=rnd(),x,y,z,r,a;
+  if(u<.82){r=1.5+8.5*Math.pow(rnd(),2.2);a=rnd()*TAU;x=r*Math.cos(a);z=r*Math.sin(a);y=g()*.05*(r*.4+.4);}
+  else if(u<.9){r=1.42+g()*.05;a=rnd()*TAU;x=r*Math.cos(a);z=r*Math.sin(a);y=g()*.03;}
+  else{const s=rnd()<.5?-1:1,h=1.3+Math.pow(rnd(),1.4)*10,rr=Math.abs(g())*.1*(1+h*.25);a=rnd()*TAU;x=rr*Math.cos(a);z=rr*Math.sin(a);y=s*h;}
+  put(0,i,x,y,z);
+  // 1: Lorenz attractor
+  lor(.01);put(1,i,lx*.3+g()*.06,(lz-25)*.3+g()*.06,ly*.3+g()*.06);
+  // 2: torus knot (2,3) with volumetric tube
+  const t=rnd()*TAU,kr=Math.cos(3*t)+2,s2=2.7;
+  put(2,i,kr*Math.cos(2*t)*s2+g()*.28,-Math.sin(3*t)*s2+g()*.28,kr*Math.sin(2*t)*s2+g()*.28);
+  // 3: spiral galaxy
+  if(rnd()<.2){const q=g()*1.3;put(3,i,q,g()*.9,g()*1.3);}
+  else{r=.4+Math.pow(rnd(),1.6)*10;a=Math.floor(rnd()*4)*TAU/4+r*.55+g()*.5/(r*.25+.5);put(3,i,r*Math.cos(a),g()*.18*(1.3-r/11),r*Math.sin(a));}
+  {// 4 nebula: gaussian clouds warped into filaments
+    const B=NB[(rnd()*NB.length)|0];let nx=g()*B[3],ny=g()*B[4],nz=g()*B[5];
+    nx+=Math.sin(ny*1.3+nz*.7)*.7;nz+=Math.cos(nx*1.1+ny*.9)*.7;put(4,i,B[0]+nx,B[1]+ny,B[2]+nz);
+  }
+  {// 5 pulsar: star + dipole field + tilted beams + ring
+    const pu=rnd();let qx,qy,qz,rr,ph;
+    if(pu<.12){qx=g()*.3;qy=g()*.3;qz=g()*.3;}
+    else if(pu<.5){const L=[2,3.2,4.5,6][(rnd()*4)|0]+g()*.08,t=.2+rnd()*(Math.PI-.4);ph=rnd()*TAU;rr=L*Math.sin(t)**2;qx=rr*Math.sin(t)*Math.cos(ph);qy=rr*Math.cos(t);qz=rr*Math.sin(t)*Math.sin(ph);}
+    else if(pu<.8){const sg=rnd()<.5?-1:1,h=.5+Math.pow(rnd(),1.3)*12;rr=Math.abs(g())*.05*(1+h*.35);ph=rnd()*TAU;qx=rr*Math.cos(ph);qz=rr*Math.sin(ph);qy=sg*h;}
+    else{rr=2.5+rnd()*4.5;ph=rnd()*TAU;qx=rr*Math.cos(ph);qz=rr*Math.sin(ph);qy=g()*.04;}
+    put(5,i,qx*c7-qy*s7,qx*s7+qy*c7,qz);
+  }
+  {// 6 DNA double helix with rungs
+    const dy=(rnd()-.5)*16;
+    if(AR[i]<.9){const ph=dy*1.1+(AR[i]<.45?0:Math.PI),q=1.6+g()*.07;put(6,i,q*Math.cos(ph)+g()*.05,dy,q*Math.sin(ph)+g()*.05);}
+    else{const ry=Math.round(dy*2.5)/2.5,ra=ry*1.1,t=rnd()*2-1;put(6,i,1.6*Math.cos(ra)*t,ry,1.6*Math.sin(ra)*t);}
+  }
+  {// 7 wormhole throat
+    const ws=rnd()<.5?-1:1,wy=ws*8*Math.pow(rnd(),1.8),wr=(.9+.12*wy*wy)*(1+g()*.03),wa=rnd()*TAU+wy*.4;
+    put(7,i,wr*Math.cos(wa),wy,wr*Math.sin(wa));
+  }
+}
+const cv=document.getElementById('cv');
+let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:false});}catch(e){R=null;}
+if(!R){document.documentElement.classList.add('nogl');R={setClearColor(){},setPixelRatio(){},setSize(){},setAnimationLoop(){},render(){}};}
+R.setClearColor(0x020405);
+const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(55,1,.1,500);
+const geo=new THREE.BufferGeometry();
+geo.setAttribute('position',new THREE.BufferAttribute(P[0],3));
+['p1','p2','p3','p4','p5','p6','p7'].forEach((n,k)=>geo.setAttribute(n,new THREE.BufferAttribute(P[k+1],3)));
+geo.setAttribute('aR',new THREE.BufferAttribute(AR,1));
+const U={uW:{value:new THREE.Vector4(1,0,0,0)},uW2:{value:new THREE.Vector4()},uM:{value:new THREE.Vector3(99,99,99)},uMs:{value:0},uT:{value:0},uPT:{value:-100},uPx:{value:1}};
+const mat=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+vertexShader:`attribute vec3 p1,p2,p3,p4,p5,p6,p7;attribute float aR;uniform vec4 uW,uW2;uniform vec3 uM;uniform float uMs;uniform float uT,uPT,uPx;varying vec3 vC;varying float vA;
+void main(){
+ vec3 p=position*uW.x+p1*uW.y+p2*uW.z+p3*uW.w+p4*uW2.x+p5*uW2.y+p6*uW2.z+p7*uW2.w;
+ float sw=dot(uW,vec4(1.0,.08,.12,.7))+uW2.x*.5+uW2.w*.4;
+ float r=length(p.xz);
+ float ang=uT*(sw*2.2/(.6+r)+uW2.y*1.6+uW2.z*.5);
+ float c=cos(ang),s=sin(ang);
+ p.xz=vec2(c*p.x-s*p.z,s*p.x+c*p.z);
+ p+=.03*vec3(sin(uT*1.3+aR*40.),cos(uT*1.1+aR*31.),sin(uT*.9+aR*23.))*(.5+aR);
+ float d=length(p),pd=uT-uPT,ring=pd*9.;
+ float k=exp(-pow((d-ring)*.9,2.))*exp(-pd*.7);
+ p+=normalize(p+vec3(1e-4))*k*2.2;
+ vec3 dm=p-uM;float dl=length(dm);p+=dm/(dl+.001)*uMs*exp(-dl*dl*.3)*1.8;
+ vec4 mv=modelViewMatrix*vec4(p,1.);
+ gl_Position=projectionMatrix*mv;
+ gl_PointSize=clamp((1.2+aR*2.2+k*3.)*uPx*14./-mv.z,1.,16.);
+ float t=clamp(length(p)/10.,0.,1.);
+ vec3 hot=vec3(1.,.82,.45),gr=vec3(0.,1.,.6),cy=vec3(0.,.65,1.);
+ vC=mix(mix(hot,gr,smoothstep(0.,.35,t)),cy,smoothstep(.35,1.,t));
+ vC=mix(vC,vec3(1.,.2,.6),step(.975,aR)*.85);
+ float s03=uW.x+uW.y+uW.z+uW.w,dd=length(p);
+ vec3 cN=mix(mix(vec3(1.,.55,.2),vec3(.9,.15,.6),smoothstep(0.,3.,dd)),vec3(.45,.2,1.),smoothstep(2.,7.,dd)*aR*1.4);
+ cN=mix(cN,vec3(.2,1.,.9),step(.93,aR)*.8);
+ vec3 cP=mix(vec3(.4,.85,1.),vec3(1.),exp(-dd*.45));
+ cP=mix(cP,vec3(1.,.3,.8),step(.97,aR)*.7);
+ vec3 cD=aR<.45?vec3(0.,.85,1.):(aR<.9?vec3(1.,.25,.7):vec3(1.,.85,.5));
+ vec3 cW=mix(vec3(.25,.45,1.),vec3(.85,.3,1.),smoothstep(-8.,8.,p.y));
+ cW=mix(cW,vec3(1.),exp(-abs(p.y)*.9));
+ vC=vC*s03+cN*uW2.x+cP*uW2.y+cD*uW2.z+cW*uW2.w+(k+uMs*exp(-dl*dl*.5)*.5)*vec3(.8,1.,1.);
+ vA=.55+.45*aR;
+}`,
+fragmentShader:`varying vec3 vC;varying float vA;
+void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;float a=smoothstep(.5,.0,d);gl_FragColor=vec4(vC*a*a*vA*1.5,1.);}`});
+const pts=new THREE.Points(geo,mat);pts.frustumCulled=false;scene.add(pts);
+const hole=new THREE.Mesh(new THREE.SphereGeometry(1.3,48,32),new THREE.MeshBasicMaterial({color:0x000000}));scene.add(hole);
+// starfield
+const sp=new Float32Array(4000*3);
+for(let i=0;i<4000;i++){const v=new THREE.Vector3(g(),g(),g()).normalize().multiplyScalar(70+rnd()*60);sp.set([v.x,v.y,v.z],i*3);}
+const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x4a7a68,size:1.2,sizeAttenuation:false})));
+// ── portfolio wiring ──
+const CFG={email:'ms7424537@gmail.com',github:'https://github.com/Sami001-OG',linkedin:'',x:'https://x.com/Sami38174202'}; // fill in to show contact links
+const PROJ=[{"t": "01 // Endellion — Futures Trading Bot", "m": 5, "d": "Autonomous market-scanning and trade-management engine for Binance Futures: it isolates high-probability displacement setups, then manages risk and profit-taking across the whole trade lifecycle. Ships with a live dashboard and a full trading manual.", "g": ["TypeScript", "Binance Futures", "Risk management", "Render"], "l": [["repo", "https://github.com/Sami001-OG/Winning-AI"], ["live", "https://endellion-trade.onrender.com/"]]}, {"t": "02 // Crypto Backtester & Optimizer", "m": 1, "d": "A TradingView-compatible backtesting framework in pure Python with zero dependencies. It replicates the Strategy Tester broker-emulator fills, sizing and Performance Summary formulas, so a Pine port reproduces the same trades. 16 built-in strategies, parallel grid search, walk-forward and adaptive random search, plus 115 hand-computed parity checks.", "g": ["Python", "Pine Script ports", "Walk-forward", "Grid search"], "l": [["repo", "https://github.com/Sami001-OG/Crypto-Backtester-and-Strategy-Optimizer"]]}, {"t": "03 // VDOC — Video to Document", "m": 4, "d": "Turns video into a structured, searchable, semantic document instead of a flat transcript: scene detection, speaker-diarized transcription, OCR for slides and code editors, and vision models for scene and UI understanding. Packaged with Docker and CI.", "g": ["Python", "faster-whisper", "PaddleOCR", "Qwen-VL", "Docker"], "l": [["repo", "https://github.com/Sami001-OG/VDOC"]]}, {"t": "04 // Handscrybe", "m": 6, "d": "Turns any typed PDF, DOCX or TXT into handwriting on the same pages, in the same places — tables, borders and colors stay put. It reads real page coordinates and draws handwriting into the exact space, with a built-in font or your own sample sheet.", "g": ["Python", "Node.js", "Document layout", "PDF"], "l": [["repo", "https://github.com/Sami001-OG/scrybe"]]}, {"t": "05 // AI Dev Tooling", "m": 7, "d": "scode: a full CLI AI coding harness in a single Python file — multi-provider, can emulate agents like claude-code, runs on Termux. OpenCode Gateway puts the whole OpenCode CLI behind a Telegram bot. Builder is a local-first AI web-app builder with a Monaco IDE, terminal, Git UI and an agent that plans, builds and repairs.", "g": ["Python", "Node.js", "Telegram bot", "Monaco", "Multi-provider LLMs", "Termux"], "l": [["scode", "https://github.com/Sami001-OG/scode"], ["opencode-gateway", "https://github.com/Sami001-OG/OpenCode-Gateway"], ["builder", "https://github.com/Sami001-OG/Builder"]]}, {"t": "06 // Learning & Everyday Tools", "m": 3, "d": "MicroMaster, a Bengali 8085/8086 microprocessor tutor with an AI micro tutor. RepoInsight, which turns any public GitHub repo into an architecture blueprint. Plus a Betweenle solver and Flow, a private chat UI.", "g": ["React", "Vite", "OpenRouter", "TailwindCSS", "8085/8086"], "l": [["micromaster", "https://microprocessor-eight.vercel.app"], ["repoinsight", "https://repo-insight.onrender.com/"], ["betweenle", "https://sami001-og.github.io/Betweenle/"], ["flow", "https://flow-7qiy.onrender.com/"]]}];
+
+const projs=document.getElementById('projs');
+PROJ.forEach((p,i)=>{const s=document.createElement('section');s.className='proj';s.dataset.mode=p.m;if(!i)s.id='projects';
+ s.innerHTML=(i?'':'<h2>~/projects $ ls -la</h2>')+'<div class="panel reveal"><div class="bar"><i></i><i></i><i></i><span>project_0'+(i+1)+'.md</span></div><div class="bd"><h3>'+p.t+'</h3><p>'+p.d+'</p><div>'+p.g.map(x=>'<span class="tag">'+x+'</span>').join('')+'</div><div class="lk">'+p.l.map(x=>'<a href="'+x[1]+'" target="_blank" rel="noopener">['+x[0]+' ↗]</a>').join('')+'</div></div></div>';
+ projs.appendChild(s);});
+document.getElementById('tags').innerHTML=[['languages',['TypeScript','Python','JavaScript','C++','Pine Script','SQL','8085/8086 ASM']],['web + 3d',['React','Vite','Node.js','Three.js','TailwindCSS','GLSL']],['trading',['Binance Futures','Bybit','CCXT','Backtesting','Walk-forward','Monte Carlo']],['ai + infra',['LLM agents','OpenRouter','MCP','LiteLLM','Docker','Render','Vercel','Termux']]].map(r=>'<div><span style="color:var(--dim)">'+r[0]+'</span><br>'+r[1].map(x=>'<span class="tag">'+x+'</span>').join('')+'</div>').join('<br>');
+const L=document.getElementById('links');
+[['email',CFG.email&&'mailto:'+CFG.email],['github',CFG.github],['linkedin',CFG.linkedin],['x',CFG.x]].filter(a=>a[1]).forEach(([n,h])=>{const a=document.createElement('a');a.href=h;a.target='_blank';a.rel='noopener';a.textContent='['+n+']';L.appendChild(a);});
+document.getElementById('yr').textContent=new Date().getFullYear();
+// typed line
+const sleep=ms=>new Promise(r=>setTimeout(r,ms)),PH=['trading systems that learn','interactive tools that teach','Claude Code on a phone','impossible things in 3D'];
+(async()=>{const el=document.getElementById('typed');for(let i=0;;i++){const s=PH[i%PH.length];for(let k=1;k<=s.length;k++){el.textContent=s.slice(0,k);await sleep(45);}await sleep(1500);for(let k=s.length;k>=0;k--){el.textContent=s.slice(0,k);await sleep(22);}await sleep(250);}})();
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let DC=(innerWidth<700||matchMedia('(pointer:coarse)').matches)?85000:N;geo.setDrawRange(0,DC);let fa=0,ft=0;
+cv.addEventListener('webglcontextlost',e=>{e.preventDefault();document.documentElement.classList.add('nogl');});cv.addEventListener('webglcontextrestored',()=>document.documentElement.classList.remove('nogl'));
+// scene control
+let th=.6,ph=1.32,rad=18,tth=th,tph=ph,trad=rad,mx=0,my=0,ox=0,mode=0,clock=0;
+const NAMES=['SINGULARITY','LORENZ ATTRACTOR','TORUS KNOT 2,3','SPIRAL GALAXY','EMISSION NEBULA','PULSAR PSR-0531','DNA HELIX','WORMHOLE'],tw=[1,0,0,0,0,0,0,0],mn=document.getElementById('mn'),pg=document.getElementById('pg');
+let mLock=null,px=0,py=0,pa=0,ms=0;const mw=new THREE.Vector3(),tmp=new THREE.Vector3(),nrm=new THREE.Vector3();
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;px=e.clientX;py=e.clientY;pa=1;});
+addEventListener('pointerdown',e=>{px=e.clientX;py=e.clientY;pa=1;});
+addEventListener('pointerup',e=>{if(e.pointerType!=='mouse')pa=0;});addEventListener('pointercancel',()=>{pa=0;});document.documentElement.addEventListener('mouseleave',()=>{pa=0;});
+addEventListener('click',e=>{if(!e.target.closest('a,button'))pulse();});
+function pulse(){U.uPT.value=clock;}
+function scramble(el,txt){let n=0;const ch='01#$%&*<>/_=+';const iv=setInterval(()=>{n++;el.textContent=txt.split('').map((c,i)=>i<n/2?c:(c==' '?' ':ch[Math.random()*ch.length|0])).join('');if(n>=txt.length*2){el.textContent=txt;clearInterval(iv);}},22);}
+function setMode(i){if(i===mode)return;mode=i;for(let k=0;k<8;k++)tw[k]=k==i?1:0;scramble(mn,NAMES[i]);pulse();pb.forEach((b,k)=>b.classList.toggle('on',k==i));}
+const pk=document.getElementById('picker'),pb=NAMES.map((n,i)=>{const b=document.createElement('button');b.textContent=i+1;b.title=n;b.setAttribute('aria-label','scene '+(i+1)+': '+n);b.onclick=()=>pick(i);pk.appendChild(b);return b;});pb[0].classList.add('on');
+function pick(i){mLock=scrollY;setMode(i);}
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key>='1'&&e.key<='8')pick(+e.key-1);});
+const mio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!(mLock!==null&&Math.abs(scrollY-mLock)<300)){mLock=null;setMode(+e.target.dataset.mode);}}),{rootMargin:'-45% 0px -45% 0px'});
+document.querySelectorAll('[data-mode]').forEach(el=>mio.observe(el));
+function count(el){const n=+el.dataset.n,t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/1300);el.textContent=Math.round(n*(1-Math.pow(1-p,3)))+(el.dataset.s||'');if(p<1)requestAnimationFrame(f);})(t0);}
+const rv=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');e.target.querySelectorAll('[data-n]').forEach(count);rv.unobserve(e.target);}}),{threshold:.2});
+document.querySelectorAll('.reveal').forEach(el=>rv.observe(el));
+const tout=document.getElementById('tout'),tin=document.getElementById('tcmd'),hist=[];let hi=0;
+function tp(t,c){const d=document.createElement('div');if(c)d.className=c;d.textContent=t;tout.appendChild(d);tout.scrollTop=tout.scrollHeight;}
+const CMD={
+ help:()=>'commands: help · whoami · ls · projects · stack · contact · scene <1-8> · clear · sudo hire',
+ whoami:()=>'Mohammad Sami — developer & CS/CE student. Trading systems, learning tools, 3D web, LLM plumbing. TypeScript · Python · JavaScript · C++',
+ ls:()=>PROJ.map((p,i)=>'project_0'+(i+1)+'.md').join('  '),
+ projects:()=>PROJ.map(p=>p.t+'\n   '+p.l.map(x=>x[1]).join('\n   ')).join('\n'),
+ stack:()=>'TypeScript Python JavaScript C++ · React Vite Node Three.js · Binance Bybit CCXT · LLM agents OpenRouter MCP Docker',
+ contact:()=>['email: '+CFG.email,'github: '+CFG.github,'x: '+CFG.x].filter(l=>!l.endsWith(': ')).join('\n'),
+ scene:a=>{const n=+a[0];if(n>=1&&n<=8){pick(n-1);return 'scene → '+NAMES[n-1];}return 'usage: scene <1-8>';},
+ clear:()=>{tout.innerHTML='';return '';}};
+function run(raw){const c=raw.trim();if(!c)return;tp('$ '+c,'u');hist.push(c);hi=hist.length;const l=c.toLowerCase();let o;
+ if(l==='sudo hire'){o='permission granted. opening channel…';setTimeout(()=>document.getElementById('contact').scrollIntoView({behavior:'smooth'}),800);}
+ else if(l.startsWith('sudo'))o='nice try. you are not in the sudoers file. this incident will be reported.';
+ else{const [n,...a]=l.split(/\s+/);o=CMD[n]?CMD[n](a):'command not found: '+n+' — try help';}
+ if(o)tp(o);}
+tin.addEventListener('keydown',e=>{
+ if(e.key==='Enter'){run(tin.value);tin.value='';}
+ else if(e.key==='ArrowUp'){e.preventDefault();if(hi>0)tin.value=hist[--hi];}
+ else if(e.key==='ArrowDown'){e.preventDefault();if(hi<hist.length-1)tin.value=hist[++hi];else{hi=hist.length;tin.value='';}}
+ else if(e.key==='Tab'){e.preventDefault();const m=Object.keys(CMD).filter(k=>k.startsWith(tin.value.toLowerCase()));if(m.length===1)tin.value=m[0];}});
+['help','projects','stack','contact','sudo hire'].forEach(c=>{const b=document.createElement('button');b.className='chip';b.textContent=c;b.onclick=()=>run(c);document.getElementById('chips').appendChild(b);});
+tp('Mohammad Sami · interactive shell v1.0','c');tp('type "help" — or tap a command below.');
+function size(){const dpr=Math.min(devicePixelRatio||1,2);R.setPixelRatio(dpr);R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();U.uPx.value=dpr*Math.max(innerHeight,innerWidth*.9)/900*(innerWidth<700?1.35:1);lw=innerWidth;lh=innerHeight;}
+let lw=0,lh=0;addEventListener('resize',()=>{if(innerWidth!==lw||Math.abs(innerHeight-lh)>140)size();});size();
+let prev=performance.now();
+R.setAnimationLoop(()=>{
+  const now=performance.now(),raw=(now-prev)/1000,dt=Math.min(.05,raw);prev=now;clock+=dt*(RM?.35:1);
+  if(raw<.5){fa++;ft+=raw;if(ft>1.5){const f=fa/ft;fa=0;ft=0;if(clock>3&&f<38&&DC>30000){DC=Math.floor(DC*.7);geo.setDrawRange(0,DC);}}}
+  if(mode==5&&clock-U.uPT.value>1.3)pulse();
+  const sy=scrollY,W=innerWidth,H=innerHeight;
+  pg.style.width=(100*sy/Math.max(1,document.documentElement.scrollHeight-H))+'%';
+  tth=.6+sy*.0007+clock*.05+mx*.5;tph=1.32+Math.sin(sy*.0012)*.18+my*.35;trad=(mode==5?17:18)+Math.max(0,1-W/H)*20;
+  const w=U.uW.value,w2=U.uW2.value,k=1-Math.exp(-dt*2.2);
+  w.x+=(tw[0]-w.x)*k;w.y+=(tw[1]-w.y)*k;w.z+=(tw[2]-w.z)*k;w.w+=(tw[3]-w.w)*k;
+  w2.x+=(tw[4]-w2.x)*k;w2.y+=(tw[5]-w2.y)*k;w2.z+=(tw[6]-w2.z)*k;w2.w+=(tw[7]-w2.w)*k;
+  hole.scale.setScalar(Math.max(.001,w.x));
+  const kc=1-Math.exp(-dt*5);th+=(tth-th)*kc;ph+=(tph-ph)*kc;rad+=(trad-rad)*kc;
+  ox+=((W>900?(sy<H*.5?-.08:-.2)*W:0)-ox)*kc;
+  if(Math.abs(ox)>.5)cam.setViewOffset(W,H,ox,0,W,H);else cam.clearViewOffset();
+  cam.position.set(rad*Math.sin(ph)*Math.cos(th),rad*Math.cos(ph),rad*Math.sin(ph)*Math.sin(th));
+  cam.lookAt(0,0,0);U.uT.value=clock;
+  ms+=(pa-ms)*(1-Math.exp(-dt*8));U.uMs.value=ms;
+  if(ms>.01){cam.updateMatrixWorld();nrm.copy(cam.position).normalize().negate();tmp.set(px/W*2-1,-(py/H)*2+1,.5).unproject(cam).sub(cam.position).normalize();const dn=nrm.dot(tmp);if(Math.abs(dn)>1e-3)mw.copy(cam.position).addScaledVector(tmp,cam.position.length()/dn);U.uM.value.copy(mw);}
+  R.render(scene,cam);
+});
+})();
+</script></body></html>
