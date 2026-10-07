@@ -1,0 +1,22 @@
+{
+ "name": "Sami \u2014 Portfolio",
+ "short_name": "Sami",
+ "description": "Portfolio of Mohammad Sami: algorithmic trading systems, AI dev tooling and interactive learning tools \u2014 on a live 3D particle universe.",
+ "start_url": ".",
+ "scope": ".",
+ "display": "standalone",
+ "background_color": "#020405",
+ "theme_color": "#020405",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
